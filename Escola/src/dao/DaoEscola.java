@@ -4,6 +4,10 @@ import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import modelo.Escola;
 
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+
 public class DaoEscola {
     public static boolean inserir(Escola objeto) {
         String sql = "INSERT INTO Escola (nome, sigla, endereco, nr_alunos, area) VALUES (?, ?, ?, ?, ?)";
@@ -68,4 +72,31 @@ public class DaoEscola {
             return false;
         }
     }
+    
+    public static List<Escola> consultar() {
+        List<Escola> resultados = new ArrayList<>();
+        //editar o SQL conforme a entidade
+        String sql = "SELECT codigo, nome, sigla, endereco, nr_alunos, area FROM Escola";
+        PreparedStatement ps;
+        try {
+            ps = conexao.Conexao.getConexao().prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Escola objeto = new Escola();
+                //definir um set para cada atributo da entidade, cuidado com o tipo
+                objeto.setCodigo(rs.getInt("codigo"));
+                objeto.setNome(rs.getString("nome"));
+                objeto.setSigla(rs.getString("sigla"));
+                objeto.setEndereco(rs.getString("endereco"));
+                objeto.setNr_alunos(rs.getInt("nr_alunos"));
+                objeto.setArea(rs.getDouble("area"));
+                
+                resultados.add(objeto);//não mexa nesse, ele adiciona o objeto na lista
+            }
+            return resultados;
+        } catch (SQLException | ClassNotFoundException ex) {
+            System.out.println(ex.getMessage());
+            return null;
+        }
+}
 }
